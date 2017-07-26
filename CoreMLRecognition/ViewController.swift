@@ -13,13 +13,38 @@ import AVFoundation
 import CoreML
 import Vision
 
-//class ViewController: UIViewController, FrameExtractorDelegate {
-class ViewController: UIViewController {
+class ViewController: UIViewController, FrameExtractorDelegate{
+    // MARK: Properties
+    var image:UIImage?
+    var frameExtractor: FrameExtractor!
+    
+    // MARK: Outlets
+    @IBOutlet var imageView: UIImageView!
+    @IBOutlet var imageCaption: UITextField!
+    
+    // MARK: Setup App
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.setupApp()
+    }
+    
+    func setupApp() {
+        frameExtractor = FrameExtractor()
+        frameExtractor.delegate = self
+    }
+    
+    // MARK: Delegate - FrameExtractor
+    func captured(image: UIImage) {
+        self.imageView.image = image
+        
+        detectScene(image: CIImage(image: image)!)
+    }
+    
     func detectScene(image: CIImage) {
         imageCaption.text = "detecting scene..."
         
         // Load the ML model through its generated class
-        guard let model = try? VNCoreMLModel(for: GoogLeNetPlaces().model) else {
+        guard let model = try? VNCoreMLModel(for: SqueezeNet().model) else {
             fatalError("can't load Places ML model")
         }
         
@@ -33,7 +58,7 @@ class ViewController: UIViewController {
             // Update UI on main queue
             // let article = (self?.vowels.contains(topResult.identifier.first!))! ? "an" : "a"
             DispatchQueue.main.async { [weak self] in
-                self?.imageCaption.text = "\(Int(topResult.confidence * 100))% it's a \(topResult.identifier)"
+                self?.imageCaption.text = "it's a \(topResult.identifier) (\(Int(topResult.confidence * 100))%)"
             }
         }
         
@@ -46,82 +71,6 @@ class ViewController: UIViewController {
                 print(error)
             }
         }
-    }
-    
-    
-    
-/*
-     // MARK: Object Model
-     //let objectModel = SqueezeNet()
-     
-    // MARK: Update Caption
-    func caption(image:CVPixelBuffer) throws -> String {
-        let predictionOutput = try self.objectModel.prediction(image: image)
-        return "\(predictionOutput.classLabel)"
-        
-        //let element = predictionOutput.classLabelProbs.max { a, b in a.value < b.value }
-        //return "\(element)"
-    }
-    
-    //MARK: Delegat camera function
-    func captured(image: UIImage) {
-        // let newSize = CGSize(width: CGFloat(227), height: CGFloat(227))
-        let newSize = CGSize(width: CGFloat(224), height: CGFloat(224))
-        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
-        
-        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        image.draw(in: rect)
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        
-        
-        let attrs = [kCVPixelBufferCGImageCompatibilityKey: kCFBooleanTrue, kCVPixelBufferCGBitmapContextCompatibilityKey: kCFBooleanTrue] as CFDictionary
-        var pixelBuffer : CVPixelBuffer?
-        let status = CVPixelBufferCreate(kCFAllocatorDefault, Int((newImage?.size.width)!), Int((newImage?.size.height)!), kCVPixelFormatType_32ARGB, attrs, &pixelBuffer)
-        guard (status == kCVReturnSuccess) else {
-            return print("Pixel buffer error");
-        }
-        
-        CVPixelBufferLockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue: 0))
-        
-        
-        
-        var captionTxt = "???"
-        
-        do {
-            captionTxt = try caption(image: pixelBuffer!)
-        } catch {
-            captionTxt = "error"
-        }
-        
-        imageCaption.text = captionTxt
-        // imageView.image = newImage
-    }
- */
-    
-    // MARK: Setup App
-    func setupApp() {
-        //frameExtractor = FrameExtractor()
-        //frameExtractor.delegate = self
-        
-        //captured(image: imageView.image!)
-        
-        
-        let ciImage = CIImage(image: imageView.image!)
-        detectScene(image: ciImage!)
-    }
-    
-    // MARK: Properties
-    var image:UIImage?
-    var frameExtractor: FrameExtractor!
-    
-    // MARK: Outlets
-    @IBOutlet var imageView: UIImageView!
-    @IBOutlet var imageCaption: UITextField!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.setupApp()
     }
 }
 
