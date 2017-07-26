@@ -12,19 +12,17 @@ import CoreMedia
 
 protocol FrameExtractorDelegate: class {
     func captured(image: UIImage)
-    func getImageBuffer(imageBuffer: CVPixelBuffer)
 }
 
 class FrameExtractor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    private let position = AVCaptureDevicePosition.back
-    private let quality = AVCaptureSessionPresetMedium
+    private let position = AVCaptureDevice.Position.back
+    private let quality = AVCaptureSession.Preset.medium
     
     private var permissionGranted = false
     private let sessionQueue = DispatchQueue(label: "session queue")
     private let captureSession = AVCaptureSession()
     private let context = CIContext()
-    private var imageBuffer: CVPixelBuffer?
     
     weak var delegate: FrameExtractorDelegate?
     
@@ -39,7 +37,7 @@ class FrameExtractor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     // MARK: AVSession configuration
     private func checkPermission() {
-        switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
+        switch AVCaptureDevice.authorizationStatus(for: AVMediaType.video) {
         case .authorized:
             permissionGranted = true
         case .notDetermined:
@@ -51,7 +49,7 @@ class FrameExtractor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func requestPermission() {
         sessionQueue.suspend()
-        AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo) { [unowned self] granted in
+        AVCaptureDevice.requestAccess(for: AVMediaType.video) { [unowned self] granted in
             self.permissionGranted = granted
             self.sessionQueue.resume()
         }
@@ -64,11 +62,18 @@ class FrameExtractor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
         guard let captureDeviceInput = try? AVCaptureDeviceInput(device: captureDevice) else { return }
         guard captureSession.canAddInput(captureDeviceInput) else { return }
         captureSession.addInput(captureDeviceInput)
+        
         let videoOutput = AVCaptureVideoDataOutput()
+        //videoOutput.videoSettings = [
+            //String(kCVPixelBufferPixelFormatTypeKey) : Int(kCVPixelFormatType_24BGR),
+            //String(kCVPixelBufferWidthKey) : Double(277),
+            //String(kCVPixelBufferHeightKey) : Double(370),
+        //]
+        
         videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "sample buffer"))
         guard captureSession.canAddOutput(videoOutput) else { return }
         captureSession.addOutput(videoOutput)
-        guard let connection = videoOutput.connection(withMediaType: AVFoundation.AVMediaTypeVideo) else { return }
+        guard let connection = videoOutput.connection(with: AVFoundation.AVMediaType.video) else { return }
         guard connection.isVideoOrientationSupported else { return }
         guard connection.isVideoMirroringSupported else { return }
         connection.videoOrientation = .portrait
@@ -77,28 +82,24 @@ class FrameExtractor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     
     private func selectCaptureDevice() -> AVCaptureDevice? {
         return AVCaptureDevice.devices().filter {
-            ($0 as AnyObject).hasMediaType(AVMediaTypeVideo) &&
+            ($0 as AnyObject).hasMediaType(AVMediaType.video) &&
                 ($0 as AnyObject).position == position
-            }.first as? AVCaptureDevice
+            }.first
     }
     
     // MARK: Sample buffer to UIImage conversion
     private func imageFromSampleBuffer(sampleBuffer: CMSampleBuffer) -> UIImage? {
-        // guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
-        
-        self.imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)!
-        
-        let ciImage = CIImage(cvPixelBuffer: imageBuffer!)
+        guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return nil }
+        let ciImage = CIImage(cvPixelBuffer: imageBuffer)
         guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else { return nil }
         return UIImage(cgImage: cgImage)
     }
     
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
-    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputSampleBuffer sampleBuffer: CMSampleBuffer!, from connection: AVCaptureConnection!) {
+    func captureOutput(_ captureOutput: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let uiImage = imageFromSampleBuffer(sampleBuffer: sampleBuffer) else { return }
         DispatchQueue.main.async { [unowned self] in
             self.delegate?.captured(image: uiImage)
-            self.delegate?.getImageBuffer(imageBuffer: self.imageBuffer!)
         }
     }
 }
