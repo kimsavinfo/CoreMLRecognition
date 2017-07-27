@@ -12,6 +12,7 @@
 		753C1E451F28709200EAE367 /* Resnet50.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 753C1E401F28709200EAE367 /* Resnet50.mlmodel */; };
 		753C1E461F28709200EAE367 /* Inceptionv3.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 753C1E411F28709200EAE367 /* Inceptionv3.mlmodel */; };
 		753C1E471F28709200EAE367 /* SqueezeNet.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 753C1E421F28709200EAE367 /* SqueezeNet.mlmodel */; };
+		755AFA721F29D68200C72261 /* CoreMLDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 755AFA711F29D66100C72261 /* CoreMLDetector.swift */; };
 		7574C5521F267BC20036FA77 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 75F486931F252F0D00507286 /* CoreMedia.framework */; };
 		7574C5571F267D800036FA77 /* FrameExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7574C5561F267D4B0036FA77 /* FrameExtractor.swift */; };
 		7574C5581F267F610036FA77 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7513B3491F24F7B300D8D02B /* AVFoundation.framework */; };
@@ -31,6 +32,7 @@
 		753C1E401F28709200EAE367 /* Resnet50.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Resnet50.mlmodel; sourceTree = "<group>"; };
 		753C1E411F28709200EAE367 /* Inceptionv3.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Inceptionv3.mlmodel; sourceTree = "<group>"; };
 		753C1E421F28709200EAE367 /* SqueezeNet.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = SqueezeNet.mlmodel; sourceTree = "<group>"; };
+		755AFA711F29D66100C72261 /* CoreMLDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreMLDetector.swift; sourceTree = "<group>"; };
 		7574C5561F267D4B0036FA77 /* FrameExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameExtractor.swift; sourceTree = "<group>"; };
 		758761381F24F4130083F0F3 /* CoreMLRecognition.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoreMLRecognition.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7587613B1F24F4130083F0F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -71,6 +73,14 @@
 			path = CoreMLModels;
 			sourceTree = "<group>";
 		};
+		755AFA701F29D66100C72261 /* CoreMLDetector */ = {
+			isa = PBXGroup;
+			children = (
+				755AFA711F29D66100C72261 /* CoreMLDetector.swift */,
+			);
+			path = CoreMLDetector;
+			sourceTree = "<group>";
+		};
 		7574C5551F267D4B0036FA77 /* FrameExtractor */ = {
 			isa = PBXGroup;
 			children = (
@@ -83,8 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				7587613A1F24F4130083F0F3 /* CoreMLRecognition */,
-				758761391F24F4130083F0F3 /* Products */,
 				7587614D1F24F4210083F0F3 /* Frameworks */,
+				758761391F24F4130083F0F3 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,6 +109,7 @@
 		7587613A1F24F4130083F0F3 /* CoreMLRecognition */ = {
 			isa = PBXGroup;
 			children = (
+				755AFA701F29D66100C72261 /* CoreMLDetector */,
 				753C1E3E1F28705D00EAE367 /* CoreMLModels */,
 				7574C5551F267D4B0036FA77 /* FrameExtractor */,
 				7587613B1F24F4130083F0F3 /* AppDelegate.swift */,
@@ -203,6 +214,7 @@
 				7587613E1F24F4130083F0F3 /* ViewController.swift in Sources */,
 				753C1E471F28709200EAE367 /* SqueezeNet.mlmodel in Sources */,
 				7574C5571F267D800036FA77 /* FrameExtractor.swift in Sources */,
+				755AFA721F29D68200C72261 /* CoreMLDetector.swift in Sources */,
 				7587613C1F24F4130083F0F3 /* AppDelegate.swift in Sources */,
 				750EDE2A1F29267900C25EAE /* Tools.swift in Sources */,
 				753C1E441F28709200EAE367 /* GoogLeNetPlaces.mlmodel in Sources */,
